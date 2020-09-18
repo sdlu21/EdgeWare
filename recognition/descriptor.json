@@ -1,0 +1,21 @@
+{
+  "name": "recognition-activity",
+  "type": "flogo:activity",
+  "version": "0.0.1",
+  "title": "Recognition Activity",
+  "description": "Recognition Activity",
+  "homepage": "https://github.com/flashlight10086/EdgeBox_pub/tree/master/recognition",
+  "settings": [
+ 
+  ],
+  "input": [
+    {
+      "name": "serial",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "output": [
+    
+  ]
+}

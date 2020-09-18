@@ -1,0 +1,28 @@
+{
+  "name": "wait-activity",
+  "type": "flogo:activity",
+  "version": "0.0.1",
+  "title": "Wait Activity",
+  "description": "Wait Activity",
+  "homepage": "https://github.com/flashlight10086/EdgeBox_pub/tree/master/wait",
+  "settings": [
+    {
+      "name": "aSetting",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "input": [
+    {
+      "name": "anInput",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "output": [
+    {
+      "name": "anOutput",
+      "type": "string"
+    }
+  ]
+}

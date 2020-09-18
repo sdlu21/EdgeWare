@@ -1,0 +1,186 @@
+package sample
+
+import (
+	"fmt"
+	"image"
+	"image/color"
+	"strconv"
+
+	"github.com/project-flogo/core/activity"
+	"gocv.io/x/gocv"
+	//	"github.com/project-flogo/core/data/metadata"
+	// "image/color"
+	// "image"
+	// "log"
+)
+
+// const dataDir = "testdata"
+
+var (
+	activityMd = activity.ToMetadata(&Input{}, &Output{})
+	window     = gocv.NewWindow("EdgeWare")
+	img        gocv.Mat
+	blob       gocv.Mat
+	err        error
+	setDemoID  = 1
+	webcam, _  = gocv.OpenVideoCapture("resource/645c610.avi")
+	net        = gocv.ReadNet("resource/tfCarModel/frozen_inference_graph.pb", "resource/tfCarModel/ssd_mobilenet_v1_coco_2017_11_17.pbtxt")
+
+	// DEVICEID can be 0 or any video file path
+	//webcam, _ = gocv.OpenVideoCapture("resource/the_car_lab.mp4")
+	//webcam, _ = gocv.OpenVideoCapture(0)
+
+	//deviceID string
+	//boxcolor color.RGBA
+	//rec, _ = face.NewRecognizer("testdata")
+)
+
+func init() {
+	_ = activity.Register(&Activity{}) //activity.Register(&Activity{}, New) to create instances using factory method 'New'
+
+}
+
+//New optional factory method, should be used if one activity instance per configuration is desired
+func New(ctx activity.InitContext) (activity.Activity, error) {
+
+	act := &Activity{} //add aSetting to instance//nothing to add now
+
+	return act, nil
+}
+
+// Activity is an sample Activity that can be used as a base to create a custom activity
+type Activity struct {
+}
+
+// Metadata returns the activity's metadata
+func (a *Activity) Metadata() *activity.Metadata {
+	return activityMd
+}
+
+// https://gobyexample.com/json
+//bounding box by form of x1,y1,x2,y2
+type Bbox struct {
+	Boxid int `json:"boxid"`
+	X1    int `json:"x1"`
+	Y1    int `json:"y1"`
+	X2    int `json:"x2"`
+	Y2    int `json:"y2"`
+}
+
+//json format of person recognition
+type imgJson struct {
+	Imgid   int    `json:"imgid"`
+	Imgpath string `json:"imgpath"`
+	Bboxes  []Bbox `json:"bboxes"`
+	DemoID  int    `json:"demoid"`
+}
+
+// Eval implements api.Activity.Eval - Logs the Message
+func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
+	input := &Input{}
+	err = ctx.GetInputObject(input)
+	if err != nil {
+		return true, err
+	}
+	fmt.Printf("Input DemoId: %s\n", input.DemoId)
+
+	if len(input.DemoId) > 0 {
+		setDemoID, _ = strconv.Atoi(input.DemoId)
+	}
+	fmt.Printf("Set DemoId: %d\n", setDemoID)
+
+	if setDemoID <= 3 {
+		return true, nil
+	}
+
+	img = gocv.NewMat()
+	defer img.Close()
+
+	// load dnn
+	// open DNN object tracking model
+	// model :=hahahah
+	// config :=
+	// backend := gocv.NetBackendDefault
+
+	// target := gocv.NetTargetCPU
+	// if net.Empty() {
+	// 	fmt.Printf("Error reading network model\n")
+	// 	return true, nil
+	// }
+	// defer net.Close()
+	net.SetPreferableBackend(gocv.NetBackendType(gocv.NetBackendDefault))
+	net.SetPreferableTarget(gocv.NetTargetType(gocv.NetTargetCPU))
+
+	if ok := webcam.Read(&img); !ok {
+		fmt.Printf("Device closed\n")
+		return true, nil
+	}
+
+	// ratio := 1.0 / 127.5
+	// mean := gocv.NewScalar(127.5, 127.5, 127.5, 0)
+
+	ratio := 1.0
+	mean := gocv.NewScalar(104, 177, 123, 0)
+	// iPt := image.Pt(256, 256)
+
+	// // // convert image Mat to 300x300 blob that the object detector can analyze
+	// blob := gocv.BlobFromImage(img, ratio, image.Pt(300, 300), mean, false, false)
+	// // defer blob.close()
+	// fmt.Println(blob)
+	// blob = gocv.BlobFromImage(img, ratio, iPt, mean, true, false)
+	// fmt.Println(blob)
+	fmt.Println(ratio)
+	fmt.Println(mean)
+
+	// // feed the blob into the detector
+	// net.SetInput(blob, "")
+
+	// // run a forward pass thru the network
+	// prob := net.Forward("")
+
+	// performDetection(&img, prob)
+
+	// prob.Close()
+	// blob.Close()
+
+	window.IMShow(img)
+	window.WaitKey(1)
+
+	// output := &Output{Serial: sendString} //should be serial of the record in the database
+	output := &Output{Serial: "Car Detect Finished!"}
+	// output := &Output{Serial: `te[{:,"st`}
+	err = ctx.SetOutputObject(output)
+	if err != nil {
+		return true, err
+	}
+
+	return true, nil
+}
+
+func checkErr(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+// func convertImage(img gocv.Mat) gocv.Mat {
+// 	ratio := 1.0 / 127.5
+// 	// ratio := 1.0
+// 	mean := gocv.NewScalar(127.5, 127.5, 127.5, 0)
+// 	iPt := image.Pt(300, 300)
+// 	return gocv.BlobFromImage(img, ratio, iPt, mean, true, false)
+// }
+
+func performDetection(frame *gocv.Mat, results gocv.Mat) {
+	for i := 0; i < results.Total(); i += 7 {
+		confidence := results.GetFloatAt(0, i+2)
+		if confidence > 0.5 {
+			fmt.Printf("%f,%f,%f,%f\n", results.GetFloatAt(0, i+3), results.GetFloatAt(0, i+4), results.GetFloatAt(0, i+5), results.GetFloatAt(0, i+6))
+			left := int(results.GetFloatAt(0, i+3) * float32(frame.Cols()))
+			top := int(results.GetFloatAt(0, i+4) * float32(frame.Rows()))
+			right := int(results.GetFloatAt(0, i+5) * float32(frame.Cols()))
+			bottom := int(results.GetFloatAt(0, i+6) * float32(frame.Rows()))
+			gocv.Rectangle(frame, image.Rect(left, top, right, bottom), color.RGBA{0, 255, 0, 0}, 2)
+		}
+	}
+}

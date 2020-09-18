@@ -1,0 +1,28 @@
+{
+  "name": "sample-activity",
+  "type": "flogo:activity",
+  "version": "0.0.1",
+  "title": "Sample Activity",
+  "description": "Sample Activity",
+  "homepage": "https://github.com/flashlight10086/EdgeBox_pub/blob/master/Watch/",
+  "settings": [
+    {
+      "name": "aSetting",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "input": [
+    {
+      "name": "anInput",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "output": [
+    {
+      "name": "anOutput",
+      "type": "string"
+    }
+  ]
+}

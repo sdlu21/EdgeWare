@@ -1,0 +1,23 @@
+{
+  "name": "Watching",
+  "type": "flogo:activity",
+  "version": "0.0.1",
+  "title": "Watching Dog",
+  "description": "Watching activity, to find out any person there",
+  "homepage": "https://github.com/flashlight10086/EdgeBox_pub/tree/master/Watching",
+  "settings": [
+
+  ],
+  "input": [
+    {
+      "name": "DemoId",
+      "type": "string"
+    }
+  ],
+  "output": [
+    {
+      "name": "serial",
+      "type": "string"
+    }
+  ]
+}

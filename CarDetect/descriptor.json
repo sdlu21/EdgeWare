@@ -1,0 +1,23 @@
+{
+  "name": "CarDetect",
+  "type": "flogo:activity",
+  "version": "0.0.1",
+  "title": "Car Detect",
+  "description": "",
+  "homepage": "https://github.com/GbllYao/EdgeBox_pub/tree/master/CarDetect",
+  "settings": [
+
+  ],
+  "input": [
+    {
+      "name": "DemoId",
+      "type": "string"
+    }
+  ],
+  "output": [
+    {
+      "name": "serial",
+      "type": "string"
+    }
+  ]
+}

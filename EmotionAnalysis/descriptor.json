@@ -1,0 +1,24 @@
+{
+  "name": "emotion-analysis-activity",
+  "type": "flogo:activity",
+  "version": "0.0.1",
+  "title": "Emotion Analysis",
+  "description": "Emotion Analysis Activity",
+  "homepage": "https://github.com/flashlight10086/EdgeBox_pub/tree/master/AgeAnalysis",
+  "settings": [
+ 
+  ],
+  "input": [
+    {
+      "name": "serial",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "output": [
+    {
+      "name": "DisplayJson",
+      "type": "string"
+    }
+  ]
+}
